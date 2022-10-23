@@ -106,7 +106,7 @@ public class Dex2OatService {
         initNative();
         try {
             Files.walk(Paths.get(magiskPath).resolve("dex2oat")).forEach(path -> {
-                SELinux.setFileContext(path.toString(), "u:object_r:magisk_file:s0");
+                SELinux.setFileContext(path.toString(), "u:object_r:system_file:s0");
             });
         } catch (IOException e) {
             Log.e(TAG, "Error setting sepolicy", e);
@@ -142,7 +142,7 @@ public class Dex2OatService {
                 serverSocket = new LocalSocket(LocalSocket.SOCKET_STREAM);
                 serverSocket.bind(new LocalSocketAddress(sockPath.toString(), LocalSocketAddress.Namespace.FILESYSTEM));
                 server = new LocalServerSocket(serverSocket.getFileDescriptor());
-                SELinux.setFileContext(sockPath.toString(), "u:object_r:magisk_file:s0");
+                SELinux.setFileContext(sockPath.toString(), "u:object_r:system_file:s0");
                 stockFds = new FileDescriptor[dex2oatBinaries.length];
                 for (int i = 0; i < dex2oatBinaries.length; i++) {
                     if (dex2oatBinaries[i] != null) {
@@ -202,6 +202,7 @@ public class Dex2OatService {
             if (bin == null) continue;
             try {
                 var apex = Os.stat("/proc/1/root" + bin);
+                Log.e("LSPosed", fakeBin32);
                 var fake = Os.stat(i < 2 ? fakeBin32 : fakeBin64);
                 if (apex.st_ino != fake.st_ino) {
                     Log.w(TAG, "Check mount failed for " + bin);

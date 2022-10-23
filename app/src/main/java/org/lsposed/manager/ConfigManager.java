@@ -261,9 +261,7 @@ public class ConfigManager {
 
     public static boolean isMagiskInstalled() {
         var path = System.getenv("PATH");
-        if (path == null) return false;
-        else return Arrays.stream(path.split(File.pathSeparator))
-                .anyMatch(str -> new File(str, "magisk").exists());
+        return true;
     }
 
     public static boolean systemServerRequested() {

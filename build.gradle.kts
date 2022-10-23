@@ -24,6 +24,7 @@ import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.internal.storage.file.FileRepository
 import java.nio.file.Paths
 import org.gradle.internal.os.OperatingSystem
+import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     id("com.android.application") apply false
@@ -58,6 +59,8 @@ val androidCompileSdkVersion by extra(33)
 val androidCompileNdkVersion by extra("25.1.8937393")
 val androidSourceCompatibility by extra(JavaVersion.VERSION_11)
 val androidTargetCompatibility by extra(JavaVersion.VERSION_11)
+
+val riruModulePath by extra("/data/riru")
 
 tasks.register("Delete", Delete::class) {
     delete(rootProject.buildDir)
@@ -237,5 +240,58 @@ subprojects {
     }
     plugins.withId("org.gradle.java-library") {
         configureJavaExtension()
+    }
+}
+
+afterEvaluate {
+
+    listOf("Release", "Debug").forEach { variant ->
+        val outDir = "out"
+        val flashDir = "$outDir/${variant}"
+
+        task("prepareUpdateFiles${variant}") {
+            dependsOn("magisk-loader:prepareMagiskFilesRiru${variant}")
+
+            doLast {
+                val magiskDir = "magisk-loader/build/magisk/rirudebug"
+                delete(flashDir)
+
+                copy {
+                    into(flashDir)
+                    from("template/update_package") {
+                        exclude("zip/update.sh", "zip/files/riru-lsposed.rc")
+                    }
+                    from("template/update_package") {
+                        include("zip/update.sh", "zip/files/riru-lsposed.rc")
+                        filter<ReplaceTokens>(Pair("tokens", mapOf("RIRU_PATH" to riruModulePath)))
+                    }
+                    from(magiskDir) {
+                        include("daemon", "daemon.apk", "manager.apk", "framework/**", "bin/**", "lib/**")
+                        into("zip/files")
+                    }
+                }
+            }
+        }
+
+        task("zip${variant}") {
+            dependsOn("prepareUpdateFiles${variant}")
+            doLast {
+                exec {
+                    workingDir(flashDir)
+                    println(flashDir)
+                    commandLine("./flashable.sh")
+                }
+            }
+        }
+
+        task("flash${variant}") {
+            dependsOn("prepareUpdateFiles${variant}")
+            doLast {
+                exec {
+                    workingDir(flashDir)
+                    commandLine("./flashable.sh", "-s")
+                }
+            }
+        }
     }
 }

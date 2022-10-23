@@ -410,7 +410,7 @@ public class ConfigFileManager {
 
     synchronized static SharedMemory getPreloadDex(boolean obfuscate) {
         if (preloadDex == null) {
-            try (var is = new FileInputStream("framework/lspd.dex")) {
+            try (var is = new FileInputStream(BuildConfig.RIRU_MODULE_PATH + "/riru_lsposed/framework/lspd.dex")) {
                 preloadDex = readDex(is, obfuscate);
             } catch (Throwable e) {
                 Log.e(TAG, "preload dex", e);

@@ -48,14 +48,12 @@ char kTmpDir[] = "placeholder_/dev/0123456789abcdef\0";
 extern "C"
 JNIEXPORT void JNICALL
 Java_org_lsposed_lspd_service_Dex2OatService_initNative(JNIEnv *env, jobject thiz) {
-    char magisk_path[PATH_MAX], cwd[PATH_MAX], *module_name;
-    FILE *fp = popen("magisk --path", "r");
-    fscanf(fp, "%s", magisk_path);
-    fclose(fp);
+    char magisk_path[PATH_MAX], cwd[PATH_MAX];
+    strcpy(magisk_path, "${RIRU_MODULE_PATH}");
     getcwd(cwd, PATH_MAX);
-    module_name = cwd + std::string_view(cwd).find_last_of('/') + 1;
-    sprintf(kFakeBin32, "%s/.magisk/modules/%s/bin/dex2oat32", magisk_path, module_name);
-    sprintf(kFakeBin64, "%s/.magisk/modules/%s/bin/dex2oat64", magisk_path, module_name);
+
+    sprintf(kFakeBin32, "%s/riru_lsposed/bin/dex2oat32", magisk_path);
+    sprintf(kFakeBin64, "%s/riru_lsposed/bin/dex2oat64", magisk_path);
 
     if (GetAndroidApiLevel() == 29) {
         kDex2oat32Path = "/apex/com.android.runtime/bin/dex2oat";

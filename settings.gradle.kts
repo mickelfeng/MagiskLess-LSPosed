@@ -25,7 +25,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "LSPosed"
+rootProject.name = "MagiskLess-LSPosed"
 include(
     ":app",
     ":core",

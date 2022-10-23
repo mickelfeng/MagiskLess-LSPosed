@@ -36,6 +36,8 @@ val agpVersion : String by project
 val defaultManagerPackageName: String by rootProject.extra
 val apiCode: Int by rootProject.extra
 
+val riruModulePath: String by rootProject.extra
+
 android {
     buildFeatures {
         prefab = true
@@ -52,6 +54,7 @@ android {
         )
         buildConfigField("String", "MANAGER_INJECTED_PKG_NAME", """"$injectedPackageName"""")
         buildConfigField("int", "MANAGER_INJECTED_UID", """$injectedPackageUid""")
+        buildConfigField("String", "RIRU_MODULE_PATH", """"$riruModulePath"""")
     }
 
     buildTypes {
@@ -59,6 +62,7 @@ android {
             externalNativeBuild {
                 cmake {
                     arguments += "-DANDROID_ALLOW_UNDEFINED_SYMBOLS=true"
+                    arguments += "-DRIRU_MODULE_PATH=$riruModulePath"
                 }
             }
         }
