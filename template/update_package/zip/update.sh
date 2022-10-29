@@ -79,7 +79,7 @@ add_file $INSTALLDIR/riru-lsposed.rc /system/etc/init/riru-lsposed.rc
 
 inject_selinux_policy -s init -t su -c process2 -p nosuid_transition
 inject_selinux_policy -s zygote -t appdomain_tmpfs -c file -p read,write,open,getattr
-inject_selinux_policy -s system_server -t system_server -c unix_stream_socket -p getopt
+inject_selinux_policy -s system_server -t system_server -c process -p execmem
 inject_selinux_policy -s system_server -t tmpfs -c file -p getattr,read,open
 inject_selinux_policy -s system_server -t shell -c file -p getattr,read,open
 inject_selinux_policy -s idmap -t tmpfs -c dir -p write,add_name,remove_name

@@ -3,11 +3,14 @@ cmake_minimum_required(VERSION 3.4.1)
 
 add_subdirectory(${EXTERNAL_ROOT} external)
 
+configure_file(dex2oat.cpp dex2oat.cpp)
+
 set(SOURCES
-        dex2oat.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/dex2oat.cpp
         logcat.cpp
         obfuscation.cpp
         )
+
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
